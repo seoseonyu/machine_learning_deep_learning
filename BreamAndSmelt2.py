@@ -1,4 +1,6 @@
 from sklearn.neighbors import KNeighborsClassifier
+import numpy as np
+import matplotlib.pyplot as plt
 
 fish_length = [
     25.4,
@@ -129,3 +131,44 @@ print(score)
 # 49개의 데이터중 순서대로 35개는 도미 14개는 빙어의 데이터인데 train_input 즉 훈련 데이터에는 도미의 데이터만들어갔으니(편향) 올바르게 도미와 빙어를 분류 할 수 없다.
 
 # 이를 해결하기 위해선 도미와 빙어의 데이터가 골고루 섞여 있어야한다.
+
+input_arr = np.array(fish_data)
+target_arr = np.array(fish_target)
+
+# input_arr와 target_arr 의 데이터는 매칭이되어야한다 하지만 랜덤으로 섞는과정에서 뒤틀릴 수 있으니 random.seed() 를 사용하여 일정한 랜덤 결과를 얻는다.
+
+np.random.seed(42)
+
+index = np.arange(49)
+# arrange() 함수에 정수 N을 전달하면 0에서부터 N-1까지 1씩 증가하는 배열을 만든다.
+
+np.random.shuffle(index)
+# shuffle() 함수는 주어진 배열을 무작위로 섞는다.
+
+train_input = input_arr[index[:35]]
+train_target = target_arr[index[:35]]
+# 넘파이 배열 인덱싱을 사용하여 input_arr, target_arr 데이터를 동일한 위치로 섞는다.
+
+test_input = input_arr[index[35:]]
+test_target = target_arr[index[35:]]
+
+# plt.scatter(train_input[:, 0], train_input[:, 1])
+# plt.scatter(test_input[:, 0], test_input[:, 1])
+# plt.xlabel("length")
+# plt.ylabel("weight")
+# plt.show()
+
+# 산점도를 그려 훈련 세트와 테스트 세트에 도미와 빙어가 잘 섞여 있는지 확인한다.
+# 파란색이 훈련 세트이고 주황색이 테스트 세트이다.
+
+kn = kn.fit(train_input, train_target)
+# 앞서 생성한 훈련 세트로 k-최근접 이웃 모델을 훈련시킨다.
+
+score = kn.score(test_input, test_target)
+print(score)
+# 테스트 세트로 모델을 테스트한다.
+
+predict_result = kn.predict(test_input)
+print(predict_result)
+print(test_target)
+# predict() 메서드로 테스트 세트의 예측 결과와 실제 타깃을 확인
